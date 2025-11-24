@@ -113,7 +113,7 @@ python3 enhanced_npm_compromise_detector_phoenix.py test_comprehensive_scan/
 
 ### With Phoenix Integration
 ```bash
-python3 enhanced_npm_compromise_detector_phoenix.py test_comprehensive_scan/ --enable-phoenix-import
+python3 enhanced_npm_compromise_detector_phoenix.py test_comprehensive_scan/ --enable-phoenix
 ```
 
 ### With Full Tree Analysis
@@ -123,7 +123,7 @@ python3 enhanced_npm_compromise_detector_phoenix.py test_comprehensive_scan/ --f
 
 ### With All Libraries Import
 ```bash
-python3 enhanced_npm_compromise_detector_phoenix.py test_comprehensive_scan/ --enable-phoenix-import --import-all
+python3 enhanced_npm_compromise_detector_phoenix.py test_comprehensive_scan/ --enable-phoenix --import-all
 ```
 
 ## Expected Output Highlights

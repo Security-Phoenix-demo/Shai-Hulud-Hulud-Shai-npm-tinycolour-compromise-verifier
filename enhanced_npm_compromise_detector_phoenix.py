@@ -372,9 +372,9 @@ additional_asset_tags = npm-project,dependency-scan
                              compromised_versions: List[str], is_safe: bool, 
                              file_path: str, repo_url: str = None, dependency_type: str = "dependencies",
                              is_duplicate: bool = False, duplicate_count: int = 0) -> Dict:
-        """Create a Phoenix finding for a package with enhanced risk scoring (1-1000 scale)"""
+        """Create a Phoenix finding for a package with enhanced risk scoring (1-1000 scale for display, 1-10 for Phoenix API)"""
         
-        # Map severity to Phoenix risk scale (1 - 1000)
+        # Map severity to internal risk scale (1 - 1000) for display/documentation
         # Base risk scores
         base_risk_mapping = {
             'CRITICAL': 950,        # Confirmed compromised with specific version
@@ -385,7 +385,7 @@ additional_asset_tags = npm-project,dependency-scan
             'CLEAN': 50             # Clean library not affected by Shai Halud
         }
         
-        # Calculate base risk score
+        # Calculate base risk score (1-1000 scale for internal use)
         base_risk_score = base_risk_mapping.get(severity, 500)
         
         # Apply multipliers for enhanced severity
@@ -403,8 +403,30 @@ additional_asset_tags = npm-project,dependency-scan
                 duplicate_penalty = min(duplicate_count * 3, 30)
                 risk_score = min(risk_score + duplicate_penalty, 1000)
         
-        # Convert to string for Phoenix API (expects string)
-        risk_score_str = str(float(risk_score))
+        # Map to Phoenix API severity scale (1-10)
+        # Phoenix API requires severity between 1 and 10
+        phoenix_severity_mapping = {
+            'CRITICAL': 10.0,       # Confirmed compromised with specific version
+            'HIGH': 8.0,            # Potentially compromised (no version info)
+            'MEDIUM': 6.0,          # Suspicious patterns or indicators
+            'LOW': 3.5,             # Low-risk findings
+            'INFO': 1.0,            # Safe version of monitored package
+            'CLEAN': 1.0            # Clean library not affected by Shai Halud
+        }
+        
+        phoenix_severity = phoenix_severity_mapping.get(severity, 5.0)
+        
+        # Apply slight adjustments for duplicates (within 1-10 range)
+        if is_duplicate and duplicate_count > 1:
+            if severity == 'CRITICAL':
+                # Add 0.5 per duplicate, max 1.0 additional
+                phoenix_severity = min(phoenix_severity + min((duplicate_count - 1) * 0.5, 1.0), 10.0)
+            elif severity == 'HIGH':
+                # Add 0.3 per duplicate for potentially compromised
+                phoenix_severity = min(phoenix_severity + min((duplicate_count - 1) * 0.3, 0.9), 10.0)
+        
+        # Convert to string for Phoenix API (expects string in 1-10 range)
+        phoenix_severity_str = f"{phoenix_severity:.1f}"
         
         # Create finding description with repository and file information
         repo_info = ""
@@ -480,10 +502,10 @@ additional_asset_tags = npm-project,dependency-scan
                 remedy = f"REVIEW REQUIRED (Risk: {risk_score}/1000): Investigate package {package_name} for potential security issues and consider alternatives."
                 
         finding = {
-            "name": f"NPM Package Security: {package_name} [Risk: {risk_score}/1000]",
+            "name": f"NPM Package Security: {package_name} [Risk: {risk_score}/1000, Phoenix: {phoenix_severity:.1f}/10]",
             "description": description,
             "remedy": remedy,
-            "severity": risk_score_str,
+            "severity": phoenix_severity_str,  # Phoenix API expects 1-10 range
             "location": f"{package_name}@{version}",
             "publishedDateTime": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
             "referenceIds": [],  # Could add CVE IDs if available
@@ -506,6 +528,8 @@ additional_asset_tags = npm-project,dependency-scan
                 "compromised_versions": compromised_versions,
                 "risk_score": risk_score,
                 "risk_score_max": 1000,
+                "phoenix_severity": phoenix_severity,
+                "phoenix_severity_max": 10,
                 "risk_level": severity,
                 "is_duplicate": is_duplicate,
                 "duplicate_count": duplicate_count if is_duplicate else 1,
@@ -2282,8 +2306,9 @@ def main():
                        help='Only show critical and high severity findings')
     
     # Phoenix integration options
-    parser.add_argument('--enable-phoenix', action='store_true',
-                       help='Enable Phoenix Security API integration')
+    parser.add_argument('--enable-phoenix', '--enable-phoenix-import', action='store_true',
+                       dest='enable_phoenix',
+                       help='Enable Phoenix Security API integration (aliases: --enable-phoenix, --enable-phoenix-import)')
     parser.add_argument('--phoenix-only', action='store_true',
                        help='Only import to Phoenix, skip local report')
     

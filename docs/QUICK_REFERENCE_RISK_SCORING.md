@@ -93,13 +93,13 @@ python3 enhanced_npm_compromise_detector_phoenix.py /path/to/project/
 ### Scan with Phoenix Import
 ```bash
 python3 enhanced_npm_compromise_detector_phoenix.py /path/to/project/ \
-  --enable-phoenix-import
+  --enable-phoenix
 ```
 
 ### Scan with All Libraries
 ```bash
 python3 enhanced_npm_compromise_detector_phoenix.py /path/to/project/ \
-  --enable-phoenix-import --import-all
+  --enable-phoenix --import-all
 ```
 
 ---

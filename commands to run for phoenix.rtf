@@ -2,9 +2,9 @@
 \cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fnil\fcharset0 HelveticaNeue;\f1\fnil\fcharset0 AppleColorEmoji;\f2\fnil\fcharset0 Menlo-Regular;
 }
 {\colortbl;\red255\green255\blue255;\red218\green124\blue212;\red19\green19\blue19;\red240\green240\blue240;
-\red218\green124\blue212;\red19\green19\blue19;}
+\red218\green124\blue212;\red19\green19\blue19;\red233\green160\blue109;\red205\green204\blue213;}
 {\*\expandedcolortbl;;\cssrgb\c89020\c58039\c86275;\cssrgb\c9804\c9804\c9804;\cssrgb\c95294\c95294\c95294;
-\cssrgb\c89020\c58039\c86275;\cssrgb\c9804\c9804\c9804;}
+\cssrgb\c89020\c58039\c86275;\cssrgb\c9804\c9804\c9804;\cssrgb\c93725\c69020\c50196;\cssrgb\c83922\c83922\c86667;}
 \paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
 \deftab560
 \pard\pardeftab560\slleading20\partightenfactor0
@@ -130,9 +130,25 @@ curl -H "Authorization: token $GITHUB_TOKEN" \\\
      jq -r '.[].clone_url' > org_repos.txt\
 \
 # Then scan all repositories\
-python3 enhanced_npm_compromise_detector_phoenix.py --repo-list my_github_repos.txt --light-scan --use-embedded-credentials --enable-phoenix 
+python3 enhanced_npm_compromise_detector_phoenix.py --repo-list my_github_repos.txt \'97fu\'97ll-scan \'97use-embedded-credentials --enable-phoenix 
 \f2\fs24 \cf2 \cb3 \expnd0\expndtw0\kerning0
 \outl0\strokewidth0 \strokec2 --import-all\cf4 \strokec4  \cf2 \strokec2 --tag_vuln=\'93phoenix-security-audit Q4-2025"\cf4 \strokec4  \cf2 \strokec2 --tag_asset="\cf5 \cb6 \outl0\strokewidth0 phoenix-security-audit\cf2 \cb3 \outl0\strokewidth0 \strokec2 "\cf4 \cb1 \strokec4 \
+
+\f0\fs26 \cf0 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 \
+\
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs24 \cf7 \cb3 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec7 python3\cf4 \strokec4  \cf2 \strokec2 enhanced_npm_compromise_detector_phoenix.py\cf4 \strokec4  \cf8 \cb3 \strokec8 \\\cf4 \cb1 \strokec4 \
+\pard\pardeftab720\partightenfactor0
+\cf4 \cb3   \cf2 \strokec2 --repo-list\cf4 \strokec4  \cf2 \strokec2 my_github_repos.txt\cf4 \strokec4  \cf8 \cb3 \strokec8 \\\cf4 \cb1 \strokec4 \
+\cb3   \cf2 \strokec2 --full-tree\cf4 \strokec4  \cf8 \cb3 \strokec8 \\\cf4 \cb1 \strokec4 \
+\cb3   \cf2 \strokec2 --use-embedded-credentials\cf4 \strokec4  \cf8 \cb3 \strokec8 \\\cf4 \cb1 \strokec4 \
+\cb3   \cf2 \strokec2 --enable-phoenix\cf4 \strokec4  \cf8 \cb3 \strokec8 \\\cf4 \cb1 \strokec4 \
+\cb3   \cf2 \strokec2 --import-all\cf4 \strokec4  \cf8 \cb3 \strokec8 \\\cf4 \cb1 \strokec4 \
+\cb3   \cf2 \strokec2 --tag_vuln="phoenix-security-audit,Q4-2025"\cf4 \strokec4  \cf8 \cb3 \strokec8 \\\cf4 \cb1 \strokec4 \
+\cb3   \cf2 \strokec2 --tag_asset="phoenix-security-audit"\cf4 \cb1 \strokec4 \
+\pard\pardeftab560\slleading20\partightenfactor0
 
 \f0\fs26 \cf0 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 \
 ```\

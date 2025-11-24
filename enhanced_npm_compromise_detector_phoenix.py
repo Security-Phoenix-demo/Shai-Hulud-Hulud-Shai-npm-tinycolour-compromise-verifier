@@ -370,18 +370,41 @@ additional_asset_tags = npm-project,dependency-scan
         
     def create_phoenix_finding(self, package_name: str, version: str, severity: str, 
                              compromised_versions: List[str], is_safe: bool, 
-                             file_path: str, repo_url: str = None, dependency_type: str = "dependencies") -> Dict:
-        """Create a Phoenix finding for a package"""
+                             file_path: str, repo_url: str = None, dependency_type: str = "dependencies",
+                             is_duplicate: bool = False, duplicate_count: int = 0) -> Dict:
+        """Create a Phoenix finding for a package with enhanced risk scoring (1-1000 scale)"""
         
-        # Map severity to Phoenix risk scale (1.0 - 10.0)
-        risk_mapping = {
-            'CRITICAL': "10.0",  # Compromised package
-            'HIGH': "8.0",       # Potentially compromised
-            'INFO': "1.0",       # Safe version of monitored package
-            'CLEAN': "1.0"       # Clean library not affected by Shai Halud
+        # Map severity to Phoenix risk scale (1 - 1000)
+        # Base risk scores
+        base_risk_mapping = {
+            'CRITICAL': 950,        # Confirmed compromised with specific version
+            'HIGH': 850,            # Potentially compromised (no version info)
+            'MEDIUM': 650,          # Suspicious patterns or indicators
+            'LOW': 350,             # Low-risk findings
+            'INFO': 100,            # Safe version of monitored package
+            'CLEAN': 50             # Clean library not affected by Shai Halud
         }
         
-        risk_score = risk_mapping.get(severity, "5.0")
+        # Calculate base risk score
+        base_risk_score = base_risk_mapping.get(severity, 500)
+        
+        # Apply multipliers for enhanced severity
+        risk_score = base_risk_score
+        
+        # Duplicate detection - add severity if the same compromised package appears multiple times
+        if is_duplicate and duplicate_count > 1:
+            # Increase risk for duplicates of compromised packages
+            if severity == 'CRITICAL':
+                # Add 5 points per duplicate, max 50 points
+                duplicate_penalty = min(duplicate_count * 5, 50)
+                risk_score = min(risk_score + duplicate_penalty, 1000)
+            elif severity == 'HIGH':
+                # Add 3 points per duplicate for potentially compromised
+                duplicate_penalty = min(duplicate_count * 3, 30)
+                risk_score = min(risk_score + duplicate_penalty, 1000)
+        
+        # Convert to string for Phoenix API (expects string)
+        risk_score_str = str(float(risk_score))
         
         # Create finding description with repository and file information
         repo_info = ""
@@ -406,38 +429,61 @@ additional_asset_tags = npm-project,dependency-scan
         else:
             file_info = file_path
             
+        # Build description with risk score
+        risk_indicator = f"[Risk Score: {risk_score}/1000]"
+        
         if is_safe:
-            description = f"{repo_info}File: {file_info} - Safe version detected: {package_name}@{version}"
+            description = f"{repo_info}File: {file_info} - {risk_indicator} Safe version detected: {package_name}@{version}"
             if compromised_versions:
                 description += f" (compromised versions: {', '.join(compromised_versions)})"
         elif severity == 'CLEAN':
-            description = f"{repo_info}File: {file_info} - Library {package_name} version {version} is not affected by Shai Halud"
+            description = f"{repo_info}File: {file_info} - {risk_indicator} Library {package_name} version {version} is not affected by Shai Halud"
         else:
             if severity == 'CRITICAL':
-                description = f"{repo_info}File: {file_info} - Compromised package detected: {package_name}@{version}"
+                description = f"{repo_info}File: {file_info} - {risk_indicator} CONFIRMED COMPROMISED package detected: {package_name}@{version}"
+                if is_duplicate and duplicate_count > 1:
+                    description += f" (DUPLICATE: found {duplicate_count} times - increased severity)"
+                if compromised_versions:
+                    description += f" (known compromised versions: {', '.join(compromised_versions)})"
+            elif severity == 'HIGH':
+                description = f"{repo_info}File: {file_info} - {risk_indicator} POTENTIALLY COMPROMISED package detected: {package_name}@{version}"
+                description += " (ALL VERSIONS potentially compromised - no version info available)"
+                if is_duplicate and duplicate_count > 1:
+                    description += f" (DUPLICATE: found {duplicate_count} times - increased severity)"
             else:
-                description = f"{repo_info}File: {file_info} - Potentially compromised package detected: {package_name}@{version}"
+                description = f"{repo_info}File: {file_info} - {risk_indicator} Suspicious package detected: {package_name}@{version}"
                 
-        # Create remedy recommendation
+        # Create remedy recommendation with risk assessment
         if is_safe:
-            remedy = f"Package {package_name}@{version} is using a safe version. Continue monitoring for updates."
+            remedy = f"Package {package_name}@{version} is using a safe version (Risk: {risk_score}/1000). Continue monitoring for updates."
         elif severity == 'CLEAN':
-            remedy = f"Package {package_name}@{version} is clean and not affected by Shai Halud compromise. No action required, continue monitoring for future security advisories."
+            remedy = f"Package {package_name}@{version} is clean and not affected by Shai Halud compromise (Risk: {risk_score}/1000). No action required, continue monitoring for future security advisories."
         else:
-            if compromised_versions:
-                safe_versions = [v for v in compromised_versions if v not in compromised_versions]
-                if self.safe_overrides.get(package_name):
-                    remedy = f"Update {package_name} to safe version {self.safe_overrides[package_name]} or latest stable version"
+            if severity == 'CRITICAL':
+                if compromised_versions:
+                    if self.safe_overrides.get(package_name):
+                        remedy = f"🚨 CRITICAL (Risk: {risk_score}/1000): IMMEDIATELY update {package_name} to safe version {self.safe_overrides[package_name]} or latest stable version. "
+                    else:
+                        remedy = f"🚨 CRITICAL (Risk: {risk_score}/1000): IMMEDIATELY remove or update {package_name} to a safe version. "
+                    remedy += f"Avoid compromised versions: {', '.join(compromised_versions)}. "
+                    if is_duplicate and duplicate_count > 1:
+                        remedy += f"URGENT: This package appears {duplicate_count} times in your dependencies - review all instances."
                 else:
-                    remedy = f"Remove or update {package_name} to a safe version. Avoid versions: {', '.join(compromised_versions)}"
+                    remedy = f"🚨 CRITICAL (Risk: {risk_score}/1000): Review package {package_name} immediately for security issues."
+            elif severity == 'HIGH':
+                remedy = f"⚠️ HIGH RISK (Risk: {risk_score}/1000): Package {package_name} is potentially compromised with NO VERSION INFORMATION available. "
+                remedy += "Assume ALL versions are compromised. Consider removing this package or finding a verified alternative. "
+                remedy += "Conduct thorough code review before continuing use. "
+                if is_duplicate and duplicate_count > 1:
+                    remedy += f"WARNING: This package appears {duplicate_count} times in your dependencies - review all instances."
             else:
-                remedy = f"Review package {package_name} for potential security issues and consider alternatives"
+                remedy = f"REVIEW REQUIRED (Risk: {risk_score}/1000): Investigate package {package_name} for potential security issues and consider alternatives."
                 
         finding = {
-            "name": f"NPM Package Security: {package_name}",
+            "name": f"NPM Package Security: {package_name} [Risk: {risk_score}/1000]",
             "description": description,
             "remedy": remedy,
-            "severity": risk_score,
+            "severity": risk_score_str,
             "location": f"{package_name}@{version}",
             "publishedDateTime": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
             "referenceIds": [],  # Could add CVE IDs if available
@@ -455,9 +501,18 @@ additional_asset_tags = npm-project,dependency-scan
                 "package_version": version,
                 "dependency_type": dependency_type,
                 "is_safe_version": is_safe or severity == 'CLEAN',
+                "is_potentially_compromised": severity == 'HIGH',
+                "is_confirmed_compromised": severity == 'CRITICAL',
                 "compromised_versions": compromised_versions,
-                "scan_tool": "Shai Halud NPM Compromise Detector",
-                "scan_timestamp": datetime.now().isoformat()
+                "risk_score": risk_score,
+                "risk_score_max": 1000,
+                "risk_level": severity,
+                "is_duplicate": is_duplicate,
+                "duplicate_count": duplicate_count if is_duplicate else 1,
+                "scan_tool": "Shai Halud NPM Compromise Detector v2.0",
+                "scan_timestamp": datetime.now().isoformat(),
+                "database_version": "2.0",
+                "total_packages_in_database": len(self.compromised_packages) + len(self.potentially_compromised)
             }
         }
         
@@ -910,6 +965,12 @@ additional_asset_tags = npm-project,dependency-scan
         else:
             findings = []
             
+        # Track package occurrences for duplicate detection
+        package_occurrence_map = {}
+        for finding in findings:
+            pkg_key = f"{finding.get('package', '')}@{finding.get('version', '')}"
+            package_occurrence_map[pkg_key] = package_occurrence_map.get(pkg_key, 0) + 1
+        
         # Process findings and create Phoenix findings
         for finding in findings:
             package_name = finding.get('package', '')
@@ -923,10 +984,16 @@ additional_asset_tags = npm-project,dependency-scan
             if severity == 'INFO':
                 is_safe = True
                 
+            # Check for duplicates
+            pkg_key = f"{package_name}@{version}"
+            duplicate_count = package_occurrence_map.get(pkg_key, 1)
+            is_duplicate = duplicate_count > 1
+                
             # Create Phoenix finding - use asset file path for consistent location
             phoenix_finding = self.create_phoenix_finding(
                 package_name, version, severity or 'INFO', 
-                compromised_versions, is_safe, asset_file_path, repo_url, dep_type
+                compromised_versions, is_safe, asset_file_path, repo_url, dep_type,
+                is_duplicate, duplicate_count
             )
             
             asset['findings'].append(phoenix_finding)
@@ -968,7 +1035,8 @@ additional_asset_tags = npm-project,dependency-scan
                 if lib.get('file') == file_path:  # Only process libraries from this specific file
                     phoenix_finding = self.create_phoenix_finding(
                         lib['name'], lib['clean_version'], 'CLEAN', 
-                        [], False, asset_file_path, repo_url, lib['type']
+                        [], False, asset_file_path, repo_url, lib['type'],
+                        False, 1  # Clean libraries are not duplicates
                     )
                     asset['findings'].append(phoenix_finding)
                     

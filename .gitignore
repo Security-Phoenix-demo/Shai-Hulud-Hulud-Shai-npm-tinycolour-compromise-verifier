@@ -55,3 +55,7 @@ test_temp_*
 *.rtf
 /__pycache__
 /github-pull
+.config.backup
+commands to run for phoenix.rtf
+CREDENTIAL_SANITIZATION_SUMMARY.md
+test_subdir_structure/implementation/tools/rss-feed-checker/package.json

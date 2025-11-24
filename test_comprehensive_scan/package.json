@@ -1,0 +1,73 @@
+{
+  "name": "comprehensive-security-test",
+  "version": "1.0.0",
+  "description": "Comprehensive test for NPM compromise detection with updated risk scoring (1-1000 scale)",
+  "author": "Security Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "4.18.2",
+    "lodash": "4.17.21",
+    "react": "18.2.0",
+    "vue": "3.3.4",
+    "axios": "1.4.0",
+    "@ctrl/tinycolor": "4.1.1",
+    "@ctrl/ngx-codemirror": "7.0.1",
+    "@ctrl/ngx-emoji-mart": "9.2.1",
+    "@nativescript-community/perms": "3.0.5",
+    "@nativescript-community/sqlite": "3.5.2",
+    "@operato/board": "9.0.36",
+    "@operato/utils": "9.0.22",
+    "angulartics2": "14.1.1",
+    "another-shai": "1.0.1",
+    "@things-factory/auth-base": "9.0.43",
+    "@things-factory/email-base": "9.0.42",
+    "posthog-js": "1.100.0",
+    "@posthog/plugin-server": "1.50.0",
+    "@asyncapi/cli": "1.2.10",
+    "@asyncapi/parser": "3.0.0",
+    "@ensdomains/ensjs": "4.0.0",
+    "ethereum-ens": "0.8.0",
+    "@postman/postman-mcp-server": "2.0.0",
+    "@zapier/zapier-sdk": "14.0.0",
+    "mcp-use": "1.0.0",
+    "posthog-node": "3.0.0"
+  },
+  "devDependencies": {
+    "typescript": "5.2.0",
+    "webpack": "5.88.0",
+    "eslint": "8.50.0",
+    "prettier": "3.0.0",
+    "ngx-toastr": "19.0.1",
+    "@rxap/ngx-bootstrap": "19.0.3",
+    "eslint-config-teselagen": "6.1.7",
+    "@teriyakibomb/ember-velcro": "2.2.1",
+    "@ctrl/tinycolor": "4.1.0",
+    "@nativescript-community/sentry": "4.6.42",
+    "@operato/graphql": "9.0.22",
+    "@posthog/rrweb": "2.0.0",
+    "@asyncapi/generator": "1.15.0",
+    "jest": "29.6.0",
+    "mocha": "10.2.0"
+  },
+  "peerDependencies": {
+    "@things-factory/integration-base": "9.0.42",
+    "@ctrl/ngx-rightclick": "4.0.1"
+  },
+  "optionalDependencies": {
+    "@posthog/zendesk-plugin": "1.0.0",
+    "@ensdomains/ens-contracts": "1.2.0"
+  },
+  "scripts": {
+    "test": "jest",
+    "build": "webpack",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "keywords": [
+    "security-test",
+    "npm-compromise",
+    "supply-chain",
+    "risk-assessment"
+  ]
+}
+

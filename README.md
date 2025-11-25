@@ -302,6 +302,41 @@ python3 enhanced_npm_compromise_detector_phoenix.py --repo-list repos.txt --enab
 python3 enhanced_npm_compromise_detector_phoenix.py --repo-list repos.txt --enable-phoenix --light-scan
 ```
 
+### **🌐 Pull All Repositories Mode (`--pull-all`) (NEW!)**
+
+Automatically discover and scan ALL repositories your GitHub credentials have access to:
+
+```bash
+# 1. Configure GitHub token in .config file
+[github]
+token = ghp_your_github_token_here
+
+# 2. Pull and scan all accessible repositories
+python3 enhanced_npm_compromise_detector_phoenix.py . --pull-all
+
+# 3. With Phoenix integration and cleanup
+python3 enhanced_npm_compromise_detector_phoenix.py . \
+  --pull-all \
+  --enable-phoenix \
+  --organize-folders \
+  --delete-local-files
+```
+
+**Features:**
+- 🔍 **Auto-Discovery**: Fetches all repositories from GitHub API (owner, collaborator, organization_member)
+- 📦 **Automatic Cloning**: Clones each repository to organized folders
+- 🔄 **Recursive Scanning**: Scans all subdirectories for package files
+- 🏢 **Enterprise Ready**: Perfect for organization-wide security audits
+- 🔐 **Access Control Aware**: Only scans repositories your credentials can access
+
+**Use Cases:**
+- Organization-wide security audits
+- Personal project inventory scans
+- Automated compliance checks
+- Continuous security monitoring
+
+📖 **[Complete --pull-all Guide](PULL_ALL_FEATURE_GUIDE.md)**
+
 ### **🪶 Light Scan Mode (NEW!)**
 
 Perfect for scanning hundreds of repositories quickly:
@@ -433,17 +468,55 @@ result/20250917/         # All reports and results
 
 ---
 
+## 🆕 Recent Updates (November 2025)
+
+### **🚨 4TH WAVE UPDATE - November 25, 2025**
+**MASSIVE SECURITY ALERT**: 482 additional packages confirmed compromised!
+
+- 📊 **Database Milestone**: ALL potentially compromised packages now confirmed
+  - **690 Total Confirmed Packages** (was 208, +482 packages)
+  - **0 Potentially Compromised** (all 400 moved to confirmed + 82 new)
+  - **37 Organizations Affected** (was 29, +8 new organizations)
+
+- 🏢 **New Major Organizations Compromised:**
+  - `@asyncapi/*` - 37 packages (AsyncAPI generator, parser, templates)
+  - `@posthog/*` - 56 packages (PostHog analytics, plugins, integrations)
+  - `@postman/*` - 19 packages (Postman MCP, binaries, tools)
+  - `@ensdomains/*` - 47 packages (ENS contracts, resolver, tools)
+  - `@voiceflow/*` - 43 packages (Voiceflow SDK, types, configs)
+  - Plus `@fishingbooker/*`, `@accordproject/*`, `@hover-design/*`, and more
+
+- ⚠️ **Critical Impact Areas:**
+  - API development tooling (@asyncapi, @postman)
+  - Analytics and tracking (@posthog)
+  - Blockchain/Web3 infrastructure (@ensdomains, crypto-addr-codec)
+  - Conversational AI platforms (@voiceflow, dialogflow-es)
+  - React Native mobile development (@actbase, @strapbuild)
+  - DevOps and testing tools
+
+### **Previous Updates:**
+- 🌐 **`--pull-all` Mode**: Auto-discover and scan all accessible repositories
+- 📦 **10 Zapier Packages**: Confirmed with specific compromised versions
+- 🧪 **Test Variations Suite**: Mobile, backend, and frontend focused test suites
+
+### **Complete Update History:**
+- ✅ **690 Confirmed Compromised Packages** (November 25, 2025 - 4th Wave)
+- ✅ **37 Organizations Affected** (8 new major organizations)
+- ✅ **100% Confirmation Rate** (all potentially compromised now confirmed)
+
+---
+
 ## Overview
 
-This repository contains comprehensive security tools to detect **195 confirmed compromised NPM packages** from the 2025 supply chain attack affecting multiple organizations including `@ctrl/*`, `@nativescript-community/*`, `@art-ws/*`, `@crowdstrike/*`, `@operato/*`, `@teselagen/*`, `@things-factory/*`, and many others.
+This repository contains comprehensive security tools to detect **690 confirmed compromised NPM packages** from the 2025 supply chain attack affecting multiple organizations including `@ctrl/*`, `@nativescript-community/*`, `@art-ws/*`, `@crowdstrike/*`, `@operato/*`, `@teselagen/*`, `@things-factory/*`, `@zapier/*`, `@asyncapi/*`, `@posthog/*`, `@postman/*`, `@ensdomains/*`, `@voiceflow/*`, and many others.
 
 ## ⚠️ Critical Security Alert
 
 **IMMEDIATE ACTION REQUIRED** if any of these packages are detected in your project:
 
-### 🚨 **195 Confirmed Compromised Packages** with Specific Versions
+### 🚨 **690 Confirmed Compromised Packages** with Specific Versions
 
-**⚠️ CRITICAL ORGANIZATIONS AFFECTED:**
+**⚠️ CRITICAL ORGANIZATIONS AFFECTED (37 Organizations):**
 - **@ctrl** - 15+ packages compromised
 - **@nativescript-community** - 25+ packages compromised  
 - **@art-ws** - 15+ packages compromised
@@ -452,21 +525,40 @@ This repository contains comprehensive security tools to detect **195 confirmed 
 - **@teselagen** - 10+ packages compromised
 - **@things-factory** - 8+ packages compromised
 - **@nstudio** - 8+ packages compromised
-- **Plus 100+ individual packages from various maintainers**
+- **@zapier** - 10+ packages compromised
+- **@asyncapi** - 37+ packages compromised (**4TH WAVE!**)
+- **@posthog** - 56+ packages compromised (**4TH WAVE!**)
+- **@postman** - 19+ packages compromised (**4TH WAVE!**)
+- **@ensdomains** - 47+ packages compromised (**4TH WAVE!**)
+- **@voiceflow** - 43+ packages compromised (**4TH WAVE!**)
+- **Plus 250+ individual packages from various maintainers**
 
-#### **Key Compromised Packages (Sample):**
+#### **Key Compromised Packages (Sample from 690 total):**
+
+**Original Wave:**
 - `@ctrl/tinycolor@4.1.1, 4.1.2`
 - `@ahmedhfarag/ngx-perfect-scrollbar@20.0.20`
 - `@art-ws/common@2.0.28`
 - `@crowdstrike/commitlint@8.1.1, 8.1.2`
 - `@operato/board@9.0.36-9.0.46` (multiple versions)
 - `@nativescript-community/text@1.6.9-1.6.13` (multiple versions)
-- `angulartics2@14.1.1, 14.1.2`
-- `ngx-bootstrap@18.1.4, 19.0.3-19.0.4, 20.0.3-20.0.5`
-- `ts-gaussian@3.0.5, 3.0.6`
-- `encounter-playground@0.0.2-0.0.5` (multiple versions)
 
-> **📋 Complete List**: All 195 packages with specific compromised versions are detected by our tools. Run the scanner for the complete detection coverage.
+**3rd Wave (Zapier):**
+- `@zapier/zapier-sdk@0.15.5-0.15.7` (multiple versions)
+- `zapier-platform-core@18.0.2-18.0.4` (multiple versions)
+- `@zapier/mcp-integration@3.0.1-3.0.3` (multiple versions)
+
+**4TH WAVE (482 packages - Nov 25, 2025):**
+- `@asyncapi/*` - 37 packages (all versions affected)
+- `@posthog/*` - 56 packages (all versions affected)
+- `@postman/*` - 19 packages (all versions affected)
+- `@ensdomains/*` - 47 packages (all versions affected)
+- `@voiceflow/*` - 43 packages (all versions affected)
+- `posthog-js`, `posthog-node`, `posthog-react-native` (all versions)
+- `ethereum-ens`, `crypto-addr-codec` (all versions)
+- Plus 250+ individual packages
+
+> **📋 Complete List**: All 690 packages with specific compromised versions are detected by our tools. Run the scanner for the complete detection coverage.
 
 ## 🚨 Emergency Response (If Compromised Packages Found)
 
@@ -585,6 +677,16 @@ done
 ├── test_deep_dependencies/                     # Deep dependency tree testing
 │   ├── package.json                           # Complex dependency structure
 │   └── package-lock.json                      # Lock file with nested compromised packages
+├── test_comprehensive_scan/                    # Comprehensive risk scoring test
+│   ├── package.json                           # Test all severity levels and duplicates
+│   └── README.md                              # Test documentation
+├── test_variations/                            # Focused test suites (NEW!)
+│   ├── mobile-focused/                        # Mobile development packages
+│   ├── backend-api-focused/                   # Backend/API packages
+│   ├── frontend-web-focused/                  # Frontend/web packages
+│   └── README.md                              # Variations documentation
+├── test_zapier_confirmed/                      # Zapier confirmed compromises (NEW!)
+│   └── package.json                           # All 10 Zapier packages with versions
 ├── .github/workflows/                          # GitHub Actions integration
 │   └── npm-security-scan.yml                  # CI/CD workflow template
 ├── QUICK_START.md                              # Comprehensive usage guide
@@ -626,6 +728,12 @@ rm -f package-lock.json yarn.lock
     "@art-ws/common": "2.0.27",
     "@crowdstrike/commitlint": "8.1.0",
     "@nativescript-community/text": "1.6.8",
+    "@zapier/zapier-sdk": "0.15.4",
+    "zapier-platform-core": "18.0.1",
+    "zapier-platform-cli": "18.0.1",
+    "zapier-platform-schema": "18.0.1",
+    "@zapier/mcp-integration": "3.0.0",
+    "@zapier/secret-scrubber": "1.1.2",
     "angulartics2": "14.1.0",
     "ngx-color": "10.0.0",
     "ngx-toastr": "19.0.0",
@@ -719,10 +827,12 @@ python3 npm_package_compromise_detector_2025.py test_deep_dependencies --full-tr
 ```
 
 ### **Expected Results:**
-- **test_sample**: Should detect 5+ compromised packages and malicious patterns from 195 total monitored packages
-- **test_deep_dependencies**: Should detect compromised packages in nested dependencies  
+- **test_sample**: Should detect 5+ compromised packages and malicious patterns from 690 total monitored packages
+- **test_deep_dependencies**: Should detect compromised packages in nested dependencies
+- **test_variations**: Three focused test suites (mobile, backend, frontend) with 4th wave packages 
+- **test_zapier_confirmed**: Tests 10 Zapier packages with specific versions
 - **clean_test**: Should show clean results with exit code 0
-- **Coverage**: Scanner monitors **195 confirmed compromised packages** across **11+ major organizations**
+- **Coverage**: Scanner monitors **690 confirmed compromised packages** across **37 major organizations**
 
 ### **🤔 Troubleshooting: "Why Do I See 0 Findings?"**
 
@@ -756,8 +866,8 @@ python3 enhanced_npm_compromise_detector_phoenix.py --repo-list clean_test.txt -
 # Expected: 0 findings (this is correct!)
 
 # 3. Check scanner database is loaded
-python3 -c "import json; data=json.load(open('compromised_packages_2025.json')); print(f'Monitoring {len(data[\"compromised_packages\"])} packages')"
-# Expected: Monitoring 198 packages
+python3 -c "import json; data=json.load(open('compromised_packages_2025.json')); print(f'Monitoring {len(data[\"compromised_packages\"])} confirmed packages')"
+# Expected: Monitoring 690 confirmed packages
 ```
 
 #### **📊 What "0 Findings" Tells You:**
@@ -896,6 +1006,9 @@ python3 enhanced_npm_compromise_detector_phoenix.py --repo-list repos.txt --ligh
 
 # Automatic fallback handles GitHub API failures (no configuration needed)
 python3 enhanced_npm_compromise_detector_phoenix.py --repo-list public_repos.txt --light-scan --import-all
+
+# Scan ALL accessible repositories (auto-discovery mode - NEW!)
+python3 enhanced_npm_compromise_detector_phoenix.py . --pull-all --enable-phoenix --organize-folders --delete-local-files
 ```
 
 ### **📊 Exit Code Reference**
@@ -977,13 +1090,17 @@ jobs:
 ### **📖 Additional Resources**
 - 📘 **[QUICK_START.md](QUICK_START.md)** - Comprehensive usage guide with GitHub Actions
 - 📄 **[COMMAND_REFERENCE.md](COMMAND_REFERENCE.md)** - Quick command reference card
-- ⚡ **[QUICK_CONFIG_GUIDE.md](QUICK_CONFIG_GUIDE.md)** - **NEW!** Enhanced fallback system & configuration
+- ⚡ **[QUICK_CONFIG_GUIDE.md](QUICK_CONFIG_GUIDE.md)** - Enhanced fallback system & configuration
 - 🔗 **[PHOENIX_INTEGRATION_GUIDE.md](PHOENIX_INTEGRATION_GUIDE.md)** - Complete Phoenix integration guide
 - 🔧 **[PHOENIX_CREDENTIALS_SETUP.md](PHOENIX_CREDENTIALS_SETUP.md)** - Step-by-step credentials configuration
 - 💻 **[LOCAL_LAPTOP_USAGE_GUIDE.md](LOCAL_LAPTOP_USAGE_GUIDE.md)** - Local laptop usage with embedded credentials
 - 🍦 **[VANILLA_SCRIPT_USAGE_GUIDE.md](VANILLA_SCRIPT_USAGE_GUIDE.md)** - Using without Phoenix integration
 - 🎯 **[LOCAL_USAGE_DEMO.md](LOCAL_USAGE_DEMO.md)** - Complete local setup demo
 - 🗂️ **[ORGANIZED_FOLDERS_GUIDE.md](ORGANIZED_FOLDERS_GUIDE.md)** - GitHub pulls & results organization
+- 🌐 **[PULL_ALL_FEATURE_GUIDE.md](PULL_ALL_FEATURE_GUIDE.md)** - **NEW!** Auto-discover and scan all accessible repositories
+- 🎯 **[ZAPIER_CONFIRMED_PACKAGES_UPDATE.md](ZAPIER_CONFIRMED_PACKAGES_UPDATE.md)** - **NEW!** 10 Zapier packages update details
+- 📊 **[docs/RECURSIVE_SCANNING_GUIDE.md](docs/RECURSIVE_SCANNING_GUIDE.md)** - Recursive scanning capabilities
+- 🔍 **[TEST_VARIATIONS_SUMMARY.md](TEST_VARIATIONS_SUMMARY.md)** - Test variations guide (mobile, backend, frontend)
 
 ---
 
